@@ -1,14 +1,11 @@
 package ru.list.surkovr;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class UdpClient extends Thread {
+public class UdpClient implements Runnable {
 
     private static final Logger log = Logger.getLogger(UdpClient.class.getName());
 
@@ -16,12 +13,17 @@ public class UdpClient extends Thread {
     private InetAddress inetAddress;
     private int port;
     private byte[] buf;
+    private InetSocketAddress socketAddress;
+    private NetworkInterface networkInterface;
+    private boolean isConnected = true;
 
     public UdpClient(String ipAddress, int port) throws IOException {
         inetAddress = InetAddress.getByName(ipAddress);
         this.port = port;
         buf = new byte[1500];
         socket = new MulticastSocket();
+        socketAddress = new InetSocketAddress(inetAddress, port);
+        networkInterface = NetworkInterface.getByInetAddress(inetAddress);
         log.info("Client created ipAddress: '" + ipAddress + "' port '" + port + "'");
     }
 
@@ -40,9 +42,12 @@ public class UdpClient extends Thread {
 //        socket.close();
 //    }
 
+    @Override
     public void run() {
+        log.info("Client started for address: '" + inetAddress + ":" + port + "'");
+        isConnected = true;
         try {
-            socket.joinGroup(inetAddress);
+            socket.joinGroup(socketAddress, networkInterface);
             while (true) {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
@@ -54,12 +59,17 @@ public class UdpClient extends Thread {
                     break;
                 }
             }
-            socket.leaveGroup(inetAddress);
+            socket.leaveGroup(socketAddress, networkInterface);
             socket.close();
+            isConnected = false;
         } catch (IOException e) {
+            isConnected = false;
             log.log(Level.WARNING, "Exception occured when join group");
             e.printStackTrace();
         }
+    }
 
+    public boolean isConnected() {
+        return isConnected;
     }
 }

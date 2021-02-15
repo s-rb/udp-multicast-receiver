@@ -64,7 +64,11 @@ public class App {
         UdpClient prodClient = new UdpClient(msrStatisticsIncrementalAip, msrStatisticsIncrementalAport);
         pool.submit(testClient);
         pool.submit(prodClient);
-
+        while (true) {
+            if (!testClient.isConnected() && !prodClient.isConnected()) {
+                break;
+            }
+        }
 
         /*logger.log(Level.INFO, "Main started");
         try {
