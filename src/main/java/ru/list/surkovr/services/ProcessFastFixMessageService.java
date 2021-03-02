@@ -1,4 +1,4 @@
-package ru.list.surkovr;
+package ru.list.surkovr.services;
 
 import javax.naming.ServiceUnavailableException;
 

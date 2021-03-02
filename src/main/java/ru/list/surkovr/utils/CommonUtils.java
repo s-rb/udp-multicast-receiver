@@ -24,7 +24,7 @@ public class CommonUtils {
         return ByteBuffer.wrap(fullMessageBytes).getInt();
     }
 
-    public void printAllInterfaces() throws SocketException {
+    public static void printAllInterfaces() throws SocketException {
         Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
         NetworkInterface anInterface = null;
         while (networkInterfaces.hasMoreElements()) {

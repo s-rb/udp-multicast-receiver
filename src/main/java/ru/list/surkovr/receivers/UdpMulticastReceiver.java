@@ -1,4 +1,4 @@
-package ru.list.surkovr;
+package ru.list.surkovr.receivers;
 
 import ru.list.surkovr.utils.CommonUtils;
 
